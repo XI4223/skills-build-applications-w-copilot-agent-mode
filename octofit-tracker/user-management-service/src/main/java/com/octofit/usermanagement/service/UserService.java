@@ -2,6 +2,8 @@ package com.octofit.usermanagement.service;
 
 import com.octofit.usermanagement.model.User;
 import com.octofit.usermanagement.repository.UserRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,9 +15,11 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
+        this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
     public List<User> getAllUsers() {
@@ -37,6 +41,7 @@ public class UserService {
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new IllegalArgumentException("Email already exists: " + user.getEmail());
         }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
@@ -55,7 +60,7 @@ public class UserService {
             existingUser.setFirstName(updatedUser.getFirstName());
             existingUser.setLastName(updatedUser.getLastName());
             if (updatedUser.getPassword() != null && !updatedUser.getPassword().isBlank()) {
-                existingUser.setPassword(updatedUser.getPassword());
+                existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
             }
             return userRepository.save(existingUser);
         });

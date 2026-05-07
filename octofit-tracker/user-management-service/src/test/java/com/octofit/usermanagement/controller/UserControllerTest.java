@@ -1,6 +1,5 @@
 package com.octofit.usermanagement.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.octofit.usermanagement.model.User;
 import com.octofit.usermanagement.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,9 +27,6 @@ class UserControllerTest {
 
     @MockBean
     private UserService userService;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     private User sampleUser;
 
@@ -80,9 +76,12 @@ class UserControllerTest {
     void createUser_valid_returnsCreated() throws Exception {
         when(userService.createUser(any(User.class))).thenReturn(sampleUser);
 
+        String userJson = "{\"username\":\"johndoe\",\"email\":\"john@example.com\","
+                + "\"password\":\"password123\",\"firstName\":\"John\",\"lastName\":\"Doe\"}";
+
         mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(sampleUser)))
+                        .content(userJson))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.username").value("johndoe"));
     }
@@ -92,9 +91,12 @@ class UserControllerTest {
         when(userService.createUser(any(User.class)))
                 .thenThrow(new IllegalArgumentException("Username already exists: johndoe"));
 
+        String userJson = "{\"username\":\"johndoe\",\"email\":\"john@example.com\","
+                + "\"password\":\"password123\",\"firstName\":\"John\",\"lastName\":\"Doe\"}";
+
         mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(sampleUser)))
+                        .content(userJson))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("Username already exists: johndoe"));
     }
@@ -103,9 +105,12 @@ class UserControllerTest {
     void updateUser_found_returnsUpdatedUser() throws Exception {
         when(userService.updateUser(eq(1L), any(User.class))).thenReturn(Optional.of(sampleUser));
 
+        String userJson = "{\"username\":\"johndoe\",\"email\":\"john@example.com\","
+                + "\"password\":\"password123\",\"firstName\":\"John\",\"lastName\":\"Doe\"}";
+
         mockMvc.perform(put("/api/users/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(sampleUser)))
+                        .content(userJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value("johndoe"));
     }
@@ -114,9 +119,12 @@ class UserControllerTest {
     void updateUser_notFound_returns404() throws Exception {
         when(userService.updateUser(eq(99L), any(User.class))).thenReturn(Optional.empty());
 
+        String userJson = "{\"username\":\"johndoe\",\"email\":\"john@example.com\","
+                + "\"password\":\"password123\",\"firstName\":\"John\",\"lastName\":\"Doe\"}";
+
         mockMvc.perform(put("/api/users/99")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(sampleUser)))
+                        .content(userJson))
                 .andExpect(status().isNotFound());
     }
 

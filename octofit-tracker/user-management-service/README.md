@@ -93,7 +93,13 @@ curl -X DELETE http://localhost:8080/api/users/1
 
 ## H2 Console
 
-During development, the H2 in-memory database console is available at:
+The H2 in-memory database console is **disabled by default**. To enable it, activate the `dev` profile:
+
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
+```
+
+The console will then be available at:
 
 ```
 http://localhost:8080/h2-console

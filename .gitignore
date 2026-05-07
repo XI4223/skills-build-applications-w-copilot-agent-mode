@@ -31,3 +31,9 @@ yarn-error.log*
 # Python files
 *.pyc
 __pycache__/
+
+# Java/Maven build artifacts
+target/
+*.jar
+*.war
+*.class
